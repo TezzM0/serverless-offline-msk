@@ -105,9 +105,7 @@ export default class ServerlessOfflineAwsMskPlugin {
     const lambda = new AWS.Lambda(lambdaParams);
 
     // From what I've seen OOTB, every consumer is a separate group ID.
-    const prefix = fn.name || `serverless-offline-msk`;
-    const id = (Math.random() + 1).toString(36).substring(2);
-    const groupId = `${prefix}-${id}`;
+    const groupId = fn.name || `serverless-offline-msk`;
 
     const consumer = this.kafka.consumer({
       groupId,
