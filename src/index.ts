@@ -15,6 +15,10 @@ export interface CustomOptions {
   brokers: Array<string>;
 }
 
+export interface ServerlessOfflineOptions {
+  lambdaPort: string | number
+}
+
 // Quick workaround to add support for other attributes
 export interface ServerlessMSKEvent extends Msk {
   maximumBatchingWindow?: number;
@@ -43,6 +47,7 @@ export default class ServerlessOfflineAwsMskPlugin {
   hooks: Hooks;
 
   customOptions: CustomOptions;
+  serverlessOfflineOptions: ServerlessOfflineOptions;
   kafka: Kafka;
 
   constructor(serverless: Serverless, options: Options) {
@@ -50,6 +55,10 @@ export default class ServerlessOfflineAwsMskPlugin {
     this.options = options;
 
     const custom = this.serverless?.service?.custom || {};
+
+    this.serverlessOfflineOptions = custom['serverless-offline'] || {};
+    this.serverlessOfflineOptions.lambdaPort ??= this.options.lambdaPort ?? 3002;
+
     this.customOptions = custom['serverless-offline-msk'] || {};
     this.customOptions.allowAutoTopicCreation ||= true;
     this.customOptions.clientId ||= defaultKafkaClientId;
@@ -94,7 +103,7 @@ export default class ServerlessOfflineAwsMskPlugin {
     }
 
     const lambdaParams: Lambda.Types.ClientConfiguration = {
-      endpoint: 'http://localhost:3002', // do we need to get this dynamically?
+      endpoint: `http://localhost:${this.serverlessOfflineOptions.lambdaPort}`,
       region: 'us-east-1', // does not matter locally, but maybe get dynamically from sls?
       credentials: {
         accessKeyId: 'root',

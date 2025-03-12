@@ -7,6 +7,9 @@ export interface CustomOptions {
     clientId: string;
     brokers: Array<string>;
 }
+export interface ServerlessOfflineOptions {
+    lambdaPort: string | number;
+}
 export interface ServerlessMSKEvent extends Msk {
     maximumBatchingWindow?: number;
 }
@@ -17,6 +20,7 @@ export default class ServerlessOfflineAwsMskPlugin {
     options: Options;
     hooks: Hooks;
     customOptions: CustomOptions;
+    serverlessOfflineOptions: ServerlessOfflineOptions;
     kafka: Kafka;
     constructor(serverless: Serverless, options: Options);
     init(): void;
